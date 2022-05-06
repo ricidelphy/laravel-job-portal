@@ -12,9 +12,6 @@ use App\Models\Company;
 use App\Models\Job;
 use Tests\TestCase;
 
-// use Database\Factories\CompanyFactory;
-// use Tests\TestCase;
-
 class JobControllerTest extends TestCase
 {
     private User $user;
@@ -25,19 +22,30 @@ class JobControllerTest extends TestCase
 
         $this->user = User::factory()->create();
         Sanctum::actingAs($this->user);
+        $this->user->assignRole('Employeer');
     }
 
-
-    public function testListJobCompanyCreate()
+    // Test List Job Company Create
+    public function testListJobCompanyCreated()
     {
-
-        $job = Job::factory()->create([
-            'user_id'       => $this->user->id,
+        $company = Company::factory()->create([
+            'user_id'   => $this->user->id,
         ]);
-        $this->json('GET', 'api/job/list', [])->assertOk();
+        $category = Category::factory()->create();
+
+        $jobs = Job::factory()->create([
+            'company_id'    => $company->id,
+            'category_id'   => $category->id
+        ]);
+        $SortType = 'ASC';
+        $Search = '';
+        $this->json(
+            'GET',
+            'api/job/list?SortField=created_at&SortType=' . $SortType . '&search= ' . $Search . ''
+        )->assertOk();
     }
 
-
+    // Test Save Failed Job Validation Error
     public function testSaveJobFailedDueToValidationErrors()
     {
         $this->json('POST', 'api/job/save', [
@@ -49,6 +57,7 @@ class JobControllerTest extends TestCase
             ->assertInvalid(['category_id', 'job_description', 'job_description', 'published']);
     }
 
+    // Test Save Job Success
     public function testSaveJobSuccessfully()
     {
 
@@ -58,7 +67,7 @@ class JobControllerTest extends TestCase
 
         $category = Category::factory()->create();
 
-        $this->postJson('api/job/save', [
+        $this->json('POST', 'api/job/save', [
             'company_id'        => $company->id,
             'category_id'       => $category->id,
             'job_name'          => $job_name = 'Magang',
@@ -77,6 +86,20 @@ class JobControllerTest extends TestCase
         ]);
     }
 
+    // Test Show Detail My Job Created
+    public function testShowDetailMyJobCreated()
+    {
+        $category = Category::factory()->create();
+        $jobs = Job::factory()->create([
+            'user_id'       => $this->user->id,
+            'category_id'   => $category->id,
+
+        ])->first();
+
+        $this->json('GET', 'api/job/detail/' . $jobs->id)->assertOk();
+    }
+
+    // Test Update Job Success
     public function testUpdateJobSuccessfully()
     {
         $category = Category::factory()->create();
@@ -86,32 +109,19 @@ class JobControllerTest extends TestCase
             'user_id'           => $this->user->id,
             'category_id'       => $category->id,
             'job_name'          => 'Fulltime WHO',
-            'job_description'   => $job_description = 'Magang selama 3 Bulan.',
-            'published'         => $published = 1,
+            'job_description'   => 'Magang selama 3 Bulan.',
+            'published'         => 1, //Publis
         ])->assertOk();
-
-        $job->refresh();
     }
 
-
+    // Test Delete Job Success
     public function testDestroyJobSuccessfully()
     {
-        $company = Company::factory()->create([
-            'id'                => 2,
-            'user_id'           => $this->user->id,
-            'company_name'      => 'PT ABCD',
-            'company_logo'      => 'no-image.png',
-            'about'             => 'Teststs',
-            'website'           => 'www.abcd.com'
-        ]);
+        $company = Company::factory()->create();
 
         $job = Job::factory()->create([
             'user_id'           => $this->user->id,
-            'company_id'        => $company_id = $company->id,
-            'category_id'       => $category_id = 1,
-            'job_name'          => $job_name = 'Magang',
-            'job_description'   => $job_description = 'Magang selama 3 Bulan.',
-            'published'         => $published = 1,
+            'company_id'        => $company->id,
         ]);
 
         $this->json('DELETE', 'api/job/delete/' . $job->id)

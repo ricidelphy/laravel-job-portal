@@ -19,17 +19,17 @@ class RoleSeeder extends Seeder
                 [
                     'id'         => 1,
                     'name'       => 'Admin',
-                    'guard_name' =>   'api',
+                    'guard_name' => 'api',
                 ],
                 [
                     'id'         => 2,
                     'name'       => 'Employeer',
-                    'guard_name' =>   'api',
+                    'guard_name' => 'api',
                 ],
                 [
                     'id'         => 3,
                     'name'       => 'Freelancer',
-                    'guard_name' =>   'api',
+                    'guard_name' => 'api',
                 ],
 
             )

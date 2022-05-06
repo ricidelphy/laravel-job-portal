@@ -26,11 +26,11 @@ use Illuminate\Support\Facades\Route;
 // Home Only
 
 Route::controller(HomeController::class)->group(function () {
-    Route::get('/', 'list_job');
+    Route::get('/', 'index');
 
     Route::prefix('job')->group(function () {
 
-        Route::get('detail/{id}', 'show');
+        Route::get('show/{id}', 'show');
         // Apply
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('apply', 'apply');
@@ -73,7 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Freelancer Only
     Route::controller(ProfileController::class)->prefix('my-profile')->group(function () {
         Route::get('detail/{id}', 'show');
-        Route::post('update/{id}', 'update');
+        Route::put('update/{id}', 'update');
     });
 
 
@@ -82,7 +82,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('list', 'index');
         Route::post('save', 'store');
         Route::get('detail', 'show');
-        Route::post('update', 'update');
+        Route::put('update', 'update');
         Route::delete('delete', 'destroy');
     });
 

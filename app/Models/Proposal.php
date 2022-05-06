@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Proposal extends Model
 {
-    use hasUuid;
+    use HasFactory, HasUuid;
 
     protected $guarded = [];
 

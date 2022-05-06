@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateProposalRequest;
 use Illuminate\Http\Request;
 use App\Models\Proposal;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class ProposalController extends Controller
         $dir = $request->SortType;
 
         // Search
-        $poropsal = Proposal::with('job', 'freelancer')->where('job_id', Auth::user()->job->id)->where(function ($query) use ($request) {
+        $proposal = Proposal::with('job', 'freelancer')->where('job_id', Auth::user()->job->id)->where(function ($query) use ($request) {
             return $query->when($request->filled('search'), function ($query) use ($request) {
                 return $query->where('status', 'LIKE', "%{$request->search}%")
 
@@ -44,31 +45,26 @@ class ProposalController extends Controller
             });
         });
 
-        $poropsal = $poropsal->offset($offSet)
+        $proposal = $proposal->offset($offSet)
 
             ->orderBy($order, $dir)
             ->paginate($perPage);
 
         return response()->json([
-            'poropsal' => $poropsal,
+            'proposals' => $proposal,
         ]);
     }
 
     // UPDATE
-    public function update(Request $request, $id)
+    public function update(UpdateProposalRequest $request, $id)
     {
         try {
-            request()->validate(
-                [
-                    'status'             =>  'required',
-                ],
-            );
 
-            $proposal = Proposal::find($id);
-            $proposal->status            = $request->status; //send, review, assessment, offering, offered, unsuitable, hired
-            $proposal->save();
+            $proposal = Proposal::find($id)->update([
+                'status'        => $request->status, //send, review, assessment, offering, offered, unsuitable, hired
+            ]);
 
-            return response()->json(['success' => true, 'message' => 'Update Proposal Successfully !']);
+            return response()->json(['success' => true, 'data' => $proposal, 'message' => 'Update Proposal Successfully !']);
         } catch (Throwable $e) {
 
             return response()->json(['success' => false, 'message' => $e]);
@@ -78,7 +74,7 @@ class ProposalController extends Controller
     // DETAIL
     public function show($id)
     {
-        $proposal = Proposal::with('job', 'freelancer')->where('id', $id)->first();
+        $proposal = Proposal::with('job', 'freelancer')->where('job_id', Auth::user()->job->id)->where('id', $id)->first();
         return (new ProposalResource($proposal));
     }
 }

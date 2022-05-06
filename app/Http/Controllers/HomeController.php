@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateProposalRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Job;
@@ -11,12 +12,12 @@ class HomeController extends Controller
 {
     //
     // LIST JOB
-    public function list_job()
+    public function index()
     {
         $jobs = Job::with('category')->where('published', 1)->paginate(10);
 
         return response()->json([
-            'jobs' => $jobs,
+            'data' => $jobs,
         ]);
     }
 
@@ -31,24 +32,19 @@ class HomeController extends Controller
     }
 
     // APPLY
-    public function apply(Request $request)
+    public function apply(CreateProposalRequest $request)
     {
         try {
 
-            if (Proposal::where('job_id', $request->job_id)->exists()) {
+            if (Proposal::where('user_id', Auth::user()->id)->where('job_id', $request->job_id)->exists()) {
                 return response()->json(['success' => false, 'message' => 'Proposal is Exists !']);
             } else {
-                request()->validate(
-                    [
-                        'job_id'        =>  'required',
-                    ],
-                );
 
-                $proposal = new Proposal;
-                $proposal->user_id      = Auth::user()->id;
-                $proposal->job_id       = $request->job_id;
-                $proposal->status       = 'send'; //send, review, assessment, offering, offered, unsuitable, hired
-                $proposal->save();
+                $proposal = Proposal::create([
+                    'user_id'           =>  Auth::user()->id,
+                    'job_id'            => $request->job_id,
+                    'status'            => 'send', //send, review, assessment, offering, offered, unsuitable, hired
+                ]);
 
                 return response()->json(['success' => true, 'message' => 'Apply Successfully !']);
             }

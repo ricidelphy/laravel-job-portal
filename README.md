@@ -2,7 +2,7 @@
 
 ## Install
 
-- Cloning
+- Cloning Project
 ```
 git clone git@gitlab.com:maopedia-dev/laravel-job-portal.git
 ```
@@ -11,12 +11,13 @@ git clone git@gitlab.com:maopedia-dev/laravel-job-portal.git
 cd laravel-job-portal
 ```
 
-- Composer
+- Install Composer
 ```
 composer install
 ```
 
-- Databse
+- Setting Database
+Before doing your database configuration in .env file
 ```
 php artisan migrate --seed
 ```
@@ -26,7 +27,7 @@ php artisan migrate --seed
 php artisan serve
 ```
 
--Test
+- Run Test
 ```
 php artisan test
 ```

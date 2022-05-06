@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Resources\ProfileResource;
 use App\Models\FreelancerProfile;
+use App\Models\User;
 
 class AuthController extends Controller
 {
@@ -55,10 +56,10 @@ class AuthController extends Controller
                 ],
             );
 
-            $user = new user;
+            $user = new User;
             $user->email      = $request->email;
             $user->name       = $request->name;
-            $user->statut     = 1; //1=active, 0=not_active
+            $user->status     = 1; //1=active, 0=not_active
             $user->password   = Hash::make($request->password);
             $user->save();
 
@@ -85,10 +86,10 @@ class AuthController extends Controller
 
             );
 
-            $user = new user;
+            $user = new User;
             $user->email      = $request->email;
             $user->name       = $request->name;
-            $user->statut     = 1; //1=active, 0=not_active
+            $user->status     = 1; //1=active, 0=not_active
             $user->password   = Hash::make($request->password);
             $user->save();
 

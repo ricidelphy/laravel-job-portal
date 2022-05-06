@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateJobRequest;
 use App\Http\Requests\UpdateJobRequest;
-// use Illuminate\Http\Request;
+use Illuminate\Http\Request;
 use App\Models\Job;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +22,7 @@ class JobController extends Controller
         $dir = $request->SortType;
 
         // Search
-        $poropsal = Job::where('user_id', Auth::user()->id)->where(function ($query) use ($request) {
+        $jobs = Job::where('user_id', Auth::user()->id)->where(function ($query) use ($request) {
             return $query->when($request->filled('search'), function ($query) use ($request) {
                 return $query->where('job_name', 'LIKE', "%{$request->search}%")
                     ->orWhere('sallary', 'LIKE', "%{$request->search}%")
@@ -35,13 +35,13 @@ class JobController extends Controller
             });
         });
 
-        $poropsal = $poropsal->offset($offSet)
+        $jobs = $jobs->offset($offSet)
 
             ->orderBy($order, $dir)
             ->paginate($perPage);
 
         return response()->json([
-            'poropsal' => $poropsal,
+            'jobs' => $jobs,
         ]);
     }
 
@@ -66,6 +66,17 @@ class JobController extends Controller
         }
     }
 
+    // SHOW
+    public function show($id)
+    {
+        $job = Job::with('category')->where('user_id', Auth::user()->id)->where('id', $id)->first();
+
+        return response()->json([
+            'job' => $job,
+        ]);
+    }
+
+    // UPDATE
     public function update(UpdateJobRequest $request, $id)
     {
         try {
@@ -78,7 +89,7 @@ class JobController extends Controller
                     'published'             => $request->published,
                 ]);
 
-            return response()->json(['success' => true, 'message' => 'Job Created Successfully !']);
+            return response()->json(['success' => true, 'message' => 'Job Updated Successfully !']);
         } catch (Throwable $e) {
 
             return response()->json(['success' => false, 'message' => $e]);

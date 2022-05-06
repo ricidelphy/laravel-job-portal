@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\FreelancerProfile;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -19,6 +20,11 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             ModelHasRoleSeeder::class,
             CategoriesSeeder::class,
+            FreelancerProfileSeeder::class,
+            JobSeeder::class,
+            ProposalSeeder::class,
+            CompaniesSeeder::class,
+
         ]);
     }
 }
