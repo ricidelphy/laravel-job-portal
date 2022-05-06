@@ -4,7 +4,7 @@
 
 - Cloning Project
 ```
-git clone git@gitlab.com:maopedia-dev/laravel-job-portal.git
+git clone https://github.com/ricidelphy/laravel-job-portal.git
 ```
 - cd laravel-job-portal
 ```
